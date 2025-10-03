@@ -1,3 +1,4 @@
+import { url } from "inspector";
 import axios from "services/axios.customize";
 
 export const loginAPI = (username: string, password: string) => {
@@ -89,4 +90,41 @@ export const getBooksAPI = (query: string) => {
 export const getCategoryAPI = () => {
   const urlBackend = "/api/v1/database/category";
   return axios.get<IBackendRes<string[]>>(urlBackend);
+}
+
+export const uploadFileAPI = (fileImg: any, folder: string)=>{
+  const formData = new FormData();
+  formData.append('fileImg', fileImg);
+  const urlBackend = "/api/v1/file/upload";
+   return axios({
+    method: "post",
+    url: urlBackend,
+    data: formData,
+    headers: {
+      "Content-Type": "multipart/form-data",
+      "upload-type": folder,
+    },
+  });
+}
+
+
+export const addBookAPI = (
+  mainText: string,
+  author: string,
+  price: number,
+  category: string,
+  quantity: number,
+  thumbnail: string,
+  slider: string[]
+)=> {
+  const urlBackend = "/api/v1/book";
+  return axios.post<IBackendRes<IBookTable>>(urlBackend, {
+    mainText,
+    author,
+    price,
+    category,
+    quantity,
+    thumbnail,
+    slider,
+  });
 }

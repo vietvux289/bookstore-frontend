@@ -149,6 +149,9 @@ const BoookTable = () => {
     //   });
     // }
   };
+    const refreshTable = () => {
+    actionRef.current?.reload();
+  };
 
     const handleCancel: PopconfirmProps["onCancel"] = () => {
       message.success("Cancelled delete book!", 1);
@@ -271,6 +274,7 @@ const BoookTable = () => {
       <BookAdd
         openAddBook={openAddBook}
         setOpenAddBook={setOpenAddBook}
+        refreshTable={refreshTable}
       />
     </>
   );

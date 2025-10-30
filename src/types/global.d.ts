@@ -91,5 +91,10 @@ declare global {
     updatedAt: Date;
   }
 
+  interface IDelete{
+    acknowledged: boolean;
+    deletedCount: number;
+  }
+
   
 }

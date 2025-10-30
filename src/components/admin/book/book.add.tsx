@@ -1,12 +1,10 @@
-import { addBookAPI, getCategoryAPI } from "@/services/api";
+import { addBookAPI, getCategoryAPI, uploadFileAPI } from "@/services/api";
 import { FILE_SIZE_MAX } from "@/services/helper";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import { App, Col, Divider, Form, GetProp, Image, Input, InputNumber, Modal, Row, Select, UploadFile } from "antd"
 import { useForm } from "antd/es/form/Form";
 import { UploadChangeParam } from "antd/es/upload";
 import { FormProps, Upload, UploadProps } from "antd/lib";
-import { truncate } from "fs";
-import { ref } from "process";
 import { useEffect, useState } from "react";
 
 interface IProps {
@@ -20,8 +18,8 @@ type FieldType = {
     price: number;
     category: string;
     quantity: number;
-    thumbnail: string;
-    slider: string[];
+    thumbnail: UploadFile[];
+    slider: UploadFile[];
 }
 
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
@@ -91,8 +89,6 @@ const BookAdd = (props: IProps) => {
         setPreviewOpen(true);
     };
 
-    // const handleRemove = async (file: UploadFile, type: )
-
     const handleChange = (info: UploadChangeParam, type: "thumbnail" | "slider") => {
         let fileList = [...info.fileList];
         fileList = fileList.map(file => {
@@ -112,12 +108,44 @@ const BookAdd = (props: IProps) => {
     };
 
 
-    const handleUploadFile: UploadProps['customRequest'] = ({ file, onSuccess, onError }) => {
-        setTimeout(() => {
-            if (onSuccess)
-                onSuccess("ok");
-        }, 1000);
+    const handleUploadThumbnail: UploadProps['customRequest'] = async ({ file, onSuccess, onError }) => {
+        const thumbnail = await uploadFileAPI(file, "book");
+        if (thumbnail?.data) {
+            const uploadFile = file as UploadFile;
+            setFileListThumbnail([{
+                uid: uploadFile.uid,
+                name: thumbnail.data.fileUploaded
+            }])
+        }else {
+            message.error('Upload thumbnail failed!');
+        }
     };
+
+    const handleUploadSlider: UploadProps['customRequest'] = async ({ file, onSuccess, onError }) => {
+        const sliders = await uploadFileAPI(file, "book");
+        if (sliders?.data) {
+            const uploadFile = file as UploadFile;
+            setFileListSlider((prev) => ([
+                ...prev,
+                {
+                    uid: uploadFile.uid,
+                    name: sliders.data.fileUploaded
+                }
+            ]));
+        }else {            
+            message.error('Upload slider image failed!');
+        }
+    };
+
+    const handleRemove = (file: UploadFile, type: "thumbnail" | "slider") => {
+        if (type === 'slider') {
+            const newFileList = fileListSlider.filter(item => item.uid !== file.uid);
+            setFileListSlider(newFileList);
+        } else {
+            setFileListThumbnail([]);
+        }
+    };
+
 
     const normalFile = (e: any) => {
         if (Array.isArray(e)) {
@@ -126,15 +154,19 @@ const BookAdd = (props: IProps) => {
         return e?.fileList?.map((file: any) => ({ ...file, status: 'done' }));
     };
 
+
+
     const onFinish: FormProps<FieldType>["onFinish"] = async (values) => {
+        console.log('Received values of form: ', values);
+
         const res = await addBookAPI(
             values.mainText,
             values.author,
             values.price,
             values.category,
             values.quantity,
-            values.thumbnail,
-            values.slider
+            fileListThumbnail[0].name,
+            fileListSlider.map(file => file.name)
         );
 
         if (res.data) {
@@ -157,7 +189,7 @@ const BookAdd = (props: IProps) => {
     return (
         <>
             <Modal
-                title="Add new user"
+                title="Add new book"
                 open={openAddBook}
                 onOk={() => formAddBook.submit()}
                 onCancel={() => {
@@ -252,9 +284,10 @@ const BookAdd = (props: IProps) => {
                                     className="avatar-uploader"
                                     maxCount={1}
                                     multiple={false}
-                                    customRequest={handleUploadFile}
+                                    customRequest={handleUploadThumbnail}
                                     beforeUpload={beforeUpload}
                                     onChange={(info) => handleChange(info, 'thumbnail')}
+                                    onRemove={(file) => handleRemove(file, 'slider')}
                                     onPreview={handlePreview}
                                 >
                                     <div>
@@ -279,9 +312,10 @@ const BookAdd = (props: IProps) => {
                                     className="avatar-uploader"
                                     maxCount={5}
                                     multiple={true}
-                                    customRequest={handleUploadFile}
+                                    customRequest={handleUploadSlider}
                                     beforeUpload={beforeUpload}
                                     onChange={(info) => handleChange(info, 'slider')}
+                                    onRemove={(file) => handleRemove(file, 'slider')}
                                     onPreview={handlePreview}
                                 >
                                     <div>
@@ -320,4 +354,4 @@ const BookAdd = (props: IProps) => {
     )
 }
 
-export default BookAdd
+export default BookAdd;

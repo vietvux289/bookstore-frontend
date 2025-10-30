@@ -1,4 +1,4 @@
-import { getBooksAPI } from "@/services/api";
+import { deleteBookAPI, getBooksAPI } from "@/services/api";
 import {
   CloudDownloadOutlined,
   // CloudUploadOutlined,
@@ -135,19 +135,19 @@ const BoookTable = () => {
   ];
 
   const handleConfirm = async (_id: string) => {
-    // const res = await deleteUserAPI(_id);
-    // if (res?.data) {
-    //   refreshTable();
-    //   notification.success({
-    //     message: "Delete book",
-    //     description: `Deleted successfully! book ${_id}`,
-    //   });
-    // } else {
-    //   notification.error({
-    //     message: "Detele book",
-    //     description: JSON.stringify(res.message),
-    //   });
-    // }
+    const res = await deleteBookAPI(_id);
+    if (res?.data) {
+      refreshTable();
+      notification.success({
+        message: "Delete book",
+        description: `Deleted successfully! book ${_id}`,
+      });
+    } else {
+      notification.error({
+        message: "Detele book",
+        description: JSON.stringify(res.message),
+      });
+    }
   };
     const refreshTable = () => {
     actionRef.current?.reload();
@@ -168,7 +168,7 @@ const BoookTable = () => {
   return (
     <>
       {/* Display list books */}
-      <ProTable<IUserTable, TSearchBook>
+      <ProTable<IBookTable, TSearchBook>
         columns={columns}
         actionRef={actionRef}
         cardBordered

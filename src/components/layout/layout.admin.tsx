@@ -159,7 +159,7 @@ const LayoutAdmin = () => {
             <Outlet />
           </Content>
           <Footer style={{ padding: 0, textAlign: "center" }}>
-            Book Store &copy; VietVH - Made with luv <HeartTwoTone />
+            Copyright &copy; Book Store - VietVH. All rights reserved.
           </Footer>
         </Layout>
       </Layout>

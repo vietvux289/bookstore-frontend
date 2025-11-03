@@ -1,7 +1,6 @@
 import { deleteBookAPI, getBooksAPI } from "@/services/api";
 import {
   CloudDownloadOutlined,
-  // CloudUploadOutlined,
   DeleteOutlined,
   EditOutlined,
   PlusOutlined,
@@ -12,10 +11,11 @@ import { SortOrder } from "antd/es/table/interface";
 import { PopconfirmProps } from "antd/lib";
 import { useRef, useState } from "react";
 import { CSVLink } from "react-csv";
-import BookDetail from "./book.detail";
 import dayjs from "dayjs";
 import { FORMAT_DATE_VN } from "@/services/helper";
+import BookDetail from "./book.detail";
 import BookAdd from "./book.add";
+import BookUpdate from "./book.update";
 
 type TSearchBook = {
   mainText: string;
@@ -29,6 +29,7 @@ const BoookTable = () => {
   const [currentDataBookTb, setCurrentDataBookTb] = useState<IBookTable[]>([]);
   const [openBookUpdate, setOpenBookUpdate] = useState<boolean>(false);
   const [dataBookUpdate, setDataBookUpdate] = useState<IBookTable | null>(null);
+  const [dataUpdate, setDataUpdate] = useState<IUserTable | null>(null);
   const [meta, setMeta] = useState({
     current: 1,
     pageSize: 10,
@@ -99,7 +100,7 @@ const BoookTable = () => {
       sorter: true,
       hideInSearch: true,
       render: (_, entity) =>
-       dayjs(entity.createdAt).format(FORMAT_DATE_VN)
+        dayjs(entity.createdAt).format(FORMAT_DATE_VN)
     },
     {
       title: "Action",
@@ -149,13 +150,13 @@ const BoookTable = () => {
       });
     }
   };
-    const refreshTable = () => {
+  const refreshTable = () => {
     actionRef.current?.reload();
   };
 
-    const handleCancel: PopconfirmProps["onCancel"] = () => {
-      message.success("Cancelled delete book!", 1);
-    };
+  const handleCancel: PopconfirmProps["onCancel"] = () => {
+    message.success("Cancelled delete book!", 1);
+  };
 
   const waitTime = (time: number = 100): Promise<boolean> => {
     return new Promise((resolve) => {
@@ -212,7 +213,7 @@ const BoookTable = () => {
           };
 
           const query = buildQuery(params, sort);
-          const res = await getBooksAPI(query); 
+          const res = await getBooksAPI(query);
 
           if (res?.data) {
             setMeta(res.data.meta);
@@ -247,11 +248,11 @@ const BoookTable = () => {
         }}
         headerTitle="Table books"
         toolBarRender={() => [
-          <Button key="button" icon={<CloudDownloadOutlined />} type="primary">
-            <CSVLink data={currentDataBookTb} filename="book-table.csv">
+          <CSVLink data={currentDataBookTb} filename="book-table.csv">
+            <Button key="button" icon={<CloudDownloadOutlined />} type="primary">
               Export
-            </CSVLink>
-          </Button>,
+            </Button>
+          </CSVLink>,
           <Button
             key="button"
             icon={<PlusOutlined />}
@@ -275,6 +276,14 @@ const BoookTable = () => {
         openAddBook={openAddBook}
         setOpenAddBook={setOpenAddBook}
         refreshTable={refreshTable}
+      />
+
+      <BookUpdate
+        openBookUpdate={openBookUpdate}
+        setOpenBookUpdate={setOpenBookUpdate}
+        refreshTable={refreshTable}
+        dataUpdate={dataBookUpdate}
+        setDataUpdate={setDataBookUpdate}
       />
     </>
   );

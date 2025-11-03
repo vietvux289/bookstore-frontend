@@ -50,8 +50,7 @@ const ImportUser = (props: IProps) => {
           //load file to buffer
           const workbook = new ExcelJS.Workbook();
           const arrayBuffer = await file.arrayBuffer();
-          const buffer = Buffer.from(arrayBuffer);
-          await workbook.xlsx.load(buffer);
+          await workbook.xlsx.load(arrayBuffer);
 
           //load file to json
           const jsonData: IDataImport[] = [];

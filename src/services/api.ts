@@ -1,4 +1,3 @@
-import { url } from "inspector";
 import axios from "services/axios.customize";
 
 export const loginAPI = (username: string, password: string) => {
@@ -76,11 +75,12 @@ export const updateUserAPI = (_id: string, fullName: string, phone: string) => {
   });
 };
 
-const deleteUserAPI = (_id: string) => {
+ const deleteUserAPI = (_id: string) => {
   const urlBackend = `/api/v1/user/${_id}`;
   return axios.delete<IBackendRes<ILogin>>(urlBackend)
 }
 export default deleteUserAPI;
+
 
 export const getBooksAPI = (query: string) => {
   const urlBackend = `/api/v1/book?${query}`;
@@ -132,4 +132,28 @@ export const addBookAPI = (
 export const deleteBookAPI = (_id: string) => {
   const urlBackend = `/api/v1/book/${_id}`;
   return axios.delete<IBackendRes<IDelete>>(urlBackend)
+}
+
+
+export const UpdateBookAPI = (
+  _id: string,
+  mainText: string,
+  author: string,
+  price: number,
+  category: string,
+  quantity: number,
+  thumbnail: string,
+  slider: string[]
+) => {
+  const urlBackend = `/api/v1/book/${_id}`;
+  // Do NOT send _id in body; backend path contains it and schema rejects _id property
+  return axios.put<IBackendRes<IBookTable>>(urlBackend, {
+    mainText,
+    author,
+    price,
+    category,
+    quantity,
+    thumbnail,
+    slider,
+  });
 }

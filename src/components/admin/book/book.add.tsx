@@ -26,8 +26,8 @@ type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 
 
 const BookAdd = (props: IProps) => {
-    const [previewOpen, setPreviewOpen] = useState(false);
-    const [previewImage, setPreviewImage] = useState('');
+    const [previewOpen, setPreviewOpen] = useState<boolean>(false);
+    const [previewImage, setPreviewImage] = useState<string | undefined>(undefined);
 
     const [loadingThumbnail, setLoadingThumbnail] = useState<boolean>(false);
     const [loadingSlider, setLoadingSlider] = useState<boolean>(false);
@@ -85,7 +85,7 @@ const BookAdd = (props: IProps) => {
             file.preview = await getBase64(file.originFileObj as FileType);
         }
 
-        setPreviewImage(file.url || (file.preview as string));
+        setPreviewImage(file.url ?? (file.preview as string | undefined));
         setPreviewOpen(true);
     };
 
@@ -287,7 +287,7 @@ const BookAdd = (props: IProps) => {
                                     customRequest={handleUploadThumbnail}
                                     beforeUpload={beforeUpload}
                                     onChange={(info) => handleChange(info, 'thumbnail')}
-                                    onRemove={(file) => handleRemove(file, 'slider')}
+                                    onRemove={(file) => handleRemove(file, 'thumbnail')}
                                     onPreview={handlePreview}
                                 >
                                     <div>
@@ -330,7 +330,7 @@ const BookAdd = (props: IProps) => {
                                         preview={{
                                             visible: previewOpen,
                                             onVisibleChange: (visible) => setPreviewOpen(visible),
-                                            afterOpenChange: (visible) => !visible && setPreviewImage(''),
+                                            afterOpenChange: (visible) => !visible && setPreviewImage(undefined),
                                         }}
                                     />
                                 )}
@@ -345,7 +345,7 @@ const BookAdd = (props: IProps) => {
                         preview={{
                             visible: previewOpen,
                             onVisibleChange: setPreviewOpen,
-                            afterOpenChange: (visible) => !visible && setPreviewImage(''),
+                            afterOpenChange: (visible) => !visible && setPreviewImage(undefined),
                         }}
                     />
                 )}

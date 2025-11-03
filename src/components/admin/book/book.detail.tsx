@@ -18,8 +18,7 @@ type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 const BookDetail = (props: IProps) => {
     const { openBookDetail, setOpenBookDetail, viewBookDetail, setViewBookDetail } = props;
     const [previewOpen, setPreviewOpen] = useState(false);
-    const [previewImage, setPreviewImage] = useState('');
-    // const [previewTitle, setPreviewTitle] = useState('');
+    const [previewImage, setPreviewImage] = useState<string | undefined>(undefined);
     const [fileList, setFileList] = useState<UploadFile[]>([])
 
     useEffect(() => {
@@ -62,16 +61,13 @@ const BookDetail = (props: IProps) => {
         setViewBookDetail(null);
     }
 
-    // const handleCancel = () => {
-    //     setOpenBookDetail(false)
-    // }
 
     const handlePreview = async (file: UploadFile) => {
         if (!file.url && !file.preview) {
             file.preview = await getBase64(file.originFileObj as FileType);
         }
 
-        setPreviewImage(file.url || (file.preview as string));
+        setPreviewImage(file.url ?? (file.preview as string | undefined));
         setPreviewOpen(true);
     };
 
@@ -132,7 +128,7 @@ const BookDetail = (props: IProps) => {
                         preview={{
                             visible: previewOpen,
                             onVisibleChange: setPreviewOpen,
-                            afterOpenChange: (visible) => !visible && setPreviewImage(''),
+                            afterOpenChange: (visible) => !visible && setPreviewImage(undefined),
                         }}
                         src={previewImage}
                     />
